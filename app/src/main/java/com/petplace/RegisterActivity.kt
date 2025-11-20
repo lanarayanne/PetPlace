@@ -10,18 +10,13 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -33,22 +28,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.petplace.ui.ui.theme.PetPlaceTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import com.petplace.ui.theme.PetPlaceTheme
 
-class LoginActivity : ComponentActivity() {
+class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,18 +51,21 @@ class LoginActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = Color(0xFF419D78)) { innerPadding ->
-                    LoginPage(modifier = Modifier.padding(innerPadding))
+                    RegisterPage(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun LoginPage(modifier: Modifier = Modifier) {
+fun RegisterPage(modifier: Modifier = Modifier) {
+    var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var repeatPassword by rememberSaveable { mutableStateOf("") }
     val activity = LocalActivity.current as Activity
     val scrollState = rememberScrollState()
 
@@ -82,13 +79,33 @@ fun LoginPage(modifier: Modifier = Modifier) {
     ) {
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "PetPlace",
-            fontSize = 40.sp,
+            text = "Cadastro",
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+
+        OutlinedTextField(
+            value = name,
+            placeholder = { Text(text = "Nome", color = Color.Gray) },
+            modifier =  Modifier.fillMaxWidth(fraction = 0.9f),
+            onValueChange = { name = it },
+            shape = CircleShape,
+            textStyle = androidx.compose.ui.text.TextStyle(
+                color = Color.Black,
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+            )
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = email,
@@ -133,6 +150,29 @@ fun LoginPage(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        OutlinedTextField(
+            value = repeatPassword,
+            placeholder = {
+                Text(text = "Repita a senha",
+                    color = Color.Gray)},
+            modifier =  Modifier.fillMaxWidth(fraction = 0.9f),
+            onValueChange = { repeatPassword = it },
+            visualTransformation = PasswordVisualTransformation(),
+            shape = CircleShape,
+            textStyle = androidx.compose.ui.text.TextStyle(
+                color = Color.Black,
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+            )
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         Button(
             modifier = Modifier.fillMaxWidth(fraction = 0.9f),
             shape = CircleShape,
@@ -142,36 +182,30 @@ fun LoginPage(modifier: Modifier = Modifier) {
                 contentColor = Color.White          // Cor do texto "Entrar"
             ),
             onClick = {
-            Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, "Cadastro realizado!", Toast.LENGTH_LONG).show()
                 activity.startActivity(
-                    Intent(activity, MainActivity::class.java).setFlags(
+                    Intent(activity, LoginActivity::class.java).setFlags(
                         FLAG_ACTIVITY_SINGLE_TOP
                     )
                 )
-            } ) {
-            Text("Entrar")
+                activity.finish()
+            },
+            enabled = name.isNotEmpty() && email.isNotEmpty() && repeatPassword.isNotEmpty() && password.isNotEmpty() && password == repeatPassword) {
+            Text("Cadastrar")
         }
 
-        TextButton(onClick = {
-            Toast.makeText(activity, "Recuperar Senha clicado", Toast.LENGTH_SHORT).show()
-        }) {
-            Text(
-                text = "Esqueci a senha",
-                color = Color.White
-            )
-        }
 
         Spacer(modifier = Modifier.weight(1f))
 
         TextButton(onClick = {
             activity.startActivity(
-                Intent(activity, RegisterActivity::class.java).setFlags(
+                Intent(activity, LoginActivity::class.java).setFlags(
                     FLAG_ACTIVITY_SINGLE_TOP
                 )
             )
         }) {
             Text(
-                text = "Cadastre-se",
+                text = "Entrar",
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
