@@ -138,8 +138,8 @@ fun LoginPage(modifier: Modifier = Modifier) {
             shape = CircleShape,
             border = BorderStroke(1.dp, Color.White),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent, // Fundo invisível
-                contentColor = Color.White          // Cor do texto "Entrar"
+                containerColor = Color.Transparent,
+                contentColor = Color.White
             ),
             onClick = {
             Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
