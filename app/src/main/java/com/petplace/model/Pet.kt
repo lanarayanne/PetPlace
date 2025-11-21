@@ -6,13 +6,24 @@ import java.time.Year
 
 
 data class Pet (
+    val id : Int,
     val name : String,
     val animal : Animal,
-    val age : Integer,
-    val birthYear: Year,
+    val age : Age,
+    val birthYear: Int? =null,
     val weight: Double,
     val race : String? = null,
     val color : com.petplace.model.Color? = null,
-    val observations : String? =null
+    val observations : String? =null,
+    val picture : String? =null
 
 )
+
+enum class Age(val faixaEtaria: String) {
+    FILHOTE("Filhote"),
+    ADULTO("Adulto"),
+    IDOSO("Idoso"),
+    DESCONHECIDO("Desconhecido")
+
+
+}

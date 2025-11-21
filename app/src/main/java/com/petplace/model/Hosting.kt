@@ -6,10 +6,9 @@ data class Hosting (
     val name : String,
     val type : HostingType,
     val dailyRate : BigDecimal,
-    val vacancies : Integer,
+    val vacancies : Int,
     val address : String,
     val services : List<Service>,
     val description : String,
-    val pictures : List<String>
-
+    val pictures : List<String>? =null
 )
