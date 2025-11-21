@@ -47,14 +47,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.petplace.MainViewModel
+import com.petplace.getHostings
 import com.petplace.model.PlacePreview
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun HomePage(modifier: Modifier = Modifier.Companion) {
-    val hostingList = remember { getHostings().toMutableStateList() }
+fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+    val hostingList = viewModel.hosting
     val activity = LocalActivity.current as Activity
 
     LazyColumn(
@@ -74,10 +76,7 @@ fun HomePage(modifier: Modifier = Modifier.Companion) {
 
 }
 
-private fun getHostings() = List(3) { i ->
-    PlacePreview(i, "Creche Patinhas", 245, 4,72.0, "Picture", false, 10.0, BigDecimal("145"), "Compartilhado", 1, 2)
 
-}
 
 @Composable
 fun PreviewItem(

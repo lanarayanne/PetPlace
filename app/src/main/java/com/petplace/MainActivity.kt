@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            val viewModel : MainViewModel by viewModels()
             PetPlaceTheme {
                 Scaffold(
                     topBar = {
@@ -83,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        MainNavHost(navController = navController)
+                        MainNavHost(navController = navController, viewModel)
                     }
                 }
             }
