@@ -133,8 +133,6 @@ fun BookingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-
-
             }
         }
         items(bookingList, key = { it.id }) { item ->
@@ -276,7 +274,7 @@ fun getStatusColor(status: Status): Color {
     return when (status) {
         Status.PROXIMA -> Color(0xFF7ADCE7)
         Status.EMANDAMENTO -> Color(0xFF7AE7C7)
-        Status.CONCLUIDA -> Color(0xFF1F1F1F).copy(alpha = 0.3f) // Cinza transparente
-        Status.CANCELADA -> Color(0xFFF03737).copy(alpha = 0.3f) // Vermelho transparente
+        Status.CONCLUIDA -> Color(0xFF1F1F1F).copy(alpha = 0.3f)
+        Status.CANCELADA -> Color(0xFFF03737).copy(alpha = 0.3f)
     }
 }

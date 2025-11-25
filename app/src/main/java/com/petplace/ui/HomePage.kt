@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.petplace.MainViewModel
 import com.petplace.model.PlacePreview
 import java.math.BigDecimal
@@ -59,7 +60,10 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+fun HomePage(
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel
+) {
     val hostingList = viewModel.hosting
     val activity = LocalActivity.current as Activity
 
@@ -83,7 +87,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Default.SwapVert,
-                    contentDescription = "Favoritar",
+                    contentDescription = "Ordenar",
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
                 )
@@ -137,9 +141,8 @@ fun PreviewItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp) // Padding interno do conteúdo do card
+                .padding(12.dp)
         ) {
-            // --- IMAGEM ---
             Box(
                 modifier = Modifier
                     .size(110.dp)
@@ -158,7 +161,6 @@ fun PreviewItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // --- INFORMAÇÕES ---
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -192,7 +194,6 @@ fun PreviewItem(
                             Icon(
                                 imageVector = Icons.Filled.Star,
                                 contentDescription = null,
-                                // Pinta de amarelo se o índice for menor que a nota
                                 tint = if (index < preview.rating) yellowColor else Color.LightGray,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -345,9 +346,8 @@ fun SearchInput(
         modifier = Modifier.fillMaxWidth(fraction = 0.9f),
         shape = CircleShape,
         textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black),
-        singleLine = true, // Impede que o texto quebre linha
+        singleLine = true,
 
-        // Adicionei suporte a ícone (opcional, mas recomendado)
         leadingIcon = if (icon != null) {
             { Icon(imageVector = icon, contentDescription = null, tint = Color.Gray) }
         } else null,
