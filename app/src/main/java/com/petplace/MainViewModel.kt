@@ -52,7 +52,8 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
 
 }
 
-class MainViewModelFactory(private val db : FBDatabase) : ViewModelProvider.Factory {
+class MainViewModelFactory(private val db : FBDatabase) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(db) as T
