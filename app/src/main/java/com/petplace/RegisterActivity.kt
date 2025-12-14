@@ -40,6 +40,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.petplace.ui.theme.PetPlaceTheme
 
 class RegisterActivity : ComponentActivity() {
@@ -182,13 +184,26 @@ fun RegisterPage(modifier: Modifier = Modifier) {
                 contentColor = Color.White          // Cor do texto "Entrar"
             ),
             onClick = {
-                Toast.makeText(activity, "Cadastro realizado!", Toast.LENGTH_LONG).show()
-                activity.startActivity(
-                    Intent(activity, LoginActivity::class.java).setFlags(
-                        FLAG_ACTIVITY_SINGLE_TOP
-                    )
-                )
-                activity.finish()
+
+                Firebase.auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(activity) { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(activity,
+                                "Registro OK!", Toast.LENGTH_LONG).show()
+                            activity.finish()
+                        } else {
+                            Toast.makeText(activity,
+                                "Registro FALHOU!", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+//                Toast.makeText(activity, "Cadastro realizado!", Toast.LENGTH_LONG).show()
+//                activity.startActivity(
+//                    Intent(activity, LoginActivity::class.java).setFlags(
+//                        FLAG_ACTIVITY_SINGLE_TOP
+//                    )
+//                )
+//                activity.finish()
             },
             enabled = name.isNotEmpty() && email.isNotEmpty() && repeatPassword.isNotEmpty() && password.isNotEmpty() && password == repeatPassword) {
             Text("Cadastrar")
@@ -198,12 +213,14 @@ fun RegisterPage(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.weight(1f))
 
         TextButton(onClick = {
+
             activity.startActivity(
                 Intent(activity, LoginActivity::class.java).setFlags(
                     FLAG_ACTIVITY_SINGLE_TOP
                 )
             )
-        }) {
+        },
+        ) {
             Text(
                 text = "Entrar",
                 fontWeight = FontWeight.Bold,
