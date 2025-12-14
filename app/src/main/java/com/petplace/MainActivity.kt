@@ -50,10 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val fbDB = remember { FBDatabase() }
-            //val fbDB = FBDatabase
-            val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB)
-            )
+            val viewModel : MainViewModel = viewModel(factory = MainViewModelFactory(fbDB))
 
             val navController = rememberNavController()
             // viewModel : MainViewModel by viewModels()
@@ -61,8 +58,6 @@ class MainActivity : ComponentActivity() {
             val currentRoute = navController.currentBackStackEntryAsState()
             //val showButton = currentRoute.value?.destination?.hasRoute(Route.Home::class) == true
             val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(), onResult = {} )
-
-
 
             PetPlaceTheme {
                 Scaffold(

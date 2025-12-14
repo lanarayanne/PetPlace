@@ -7,6 +7,7 @@ class FBUser {
     var email : String? = null
     fun toUser() = User(name!!, email!!)
 }
+
 fun User.toFBUser() : FBUser {
     val fbUser = FBUser()
     fbUser.name = this.name

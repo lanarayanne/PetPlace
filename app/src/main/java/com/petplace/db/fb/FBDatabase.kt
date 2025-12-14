@@ -18,11 +18,7 @@ class FBDatabase {
 
     init {
         auth.addAuthStateListener { auth ->
-
-            val currentUser = auth.currentUser
-
-            if (currentUser == null) {
-                //citiesListReg?.remove()
+            if (auth.currentUser == null) {
                 listener?.onUserSignOut()
                 return@addAuthStateListener
             }
@@ -34,16 +30,6 @@ class FBDatabase {
                 }
             }
 
-//            db.collection("users")
-//                .document(currentUser.uid)
-//                .get()
-//                .addOnSuccessListener {
-//                    it.toObject(FBUser::class.java)
-//                        ?.let { user -> listener?.onUserLoaded(user) }
-//                }
-
-
-
         }
     }
 
@@ -51,12 +37,11 @@ class FBDatabase {
         this.listener = listener
     }
 
-    fun register(user: FBUser): com.google.android.gms.tasks.Task<Void> {
+    fun register (user: FBUser) {
         if (auth.currentUser == null)
             throw RuntimeException("User not logged in!")
         val uid = auth.currentUser!!.uid
-
-        return db.collection("users").document(uid).set(user)
+        db.collection("users").document(uid + "").set(user);
     }
 
 }
