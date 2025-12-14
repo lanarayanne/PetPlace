@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "822018571868",
+    "project_id": "praxis-flight-481212-t9",
+    "storage_bucket": "praxis-flight-481212-t9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822018571868:android:19752621ec206eb9013099",
+        "android_client_info": {
+          "package_name": "com.petplace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJfTFgye0uRSF7nsgUxf-B8l-0MrYnOGo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

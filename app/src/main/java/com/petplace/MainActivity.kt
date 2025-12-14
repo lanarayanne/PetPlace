@@ -99,11 +99,11 @@ class MainActivity : ComponentActivity() {
                         )
                         BottomNavBar(navController = navController, items)
                     },
-                    floatingActionButton = {
-                        FloatingActionButton(onClick = { }) {
-                            Icon(Icons.Default.Add, contentDescription = "Adicionar")
-                        }
-                    }
+//                    floatingActionButton = {
+//                        FloatingActionButton(onClick = { }) {
+//                            Icon(Icons.Default.Add, contentDescription = "Adicionar")
+//                        }
+//                    }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)

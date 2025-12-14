@@ -1,12 +1,12 @@
 package com.petplace.model
 
-enum class Color (val color: String){
+enum class Color (val color: String) {
     BRANCO("Branco"),
-    PRETO( "Branco"),
+    PRETO("Branco"),
     MARROM("Marrom"),
     VERDE("Verde"),
-    PRETOEBRANCO ("Preto e branco"),
-    LARANJA ("Laranja"),
+    PRETOEBRANCO("Preto e branco"),
+    LARANJA("Laranja"),
     PRETOBRANCOLARANJA("Preto, Branco e Laranja"),
     CINZABRANCOLARANJA("Cinza, Branco e Laranja"),
     TRICOLOR("Tricolor"),
@@ -21,4 +21,3 @@ enum class Color (val color: String){
     COLORIDO("Colorido")
 
 }
-
