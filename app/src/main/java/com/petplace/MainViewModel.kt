@@ -1,7 +1,11 @@
 package com.petplace
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.petplace.db.fb.FBDatabase
+import com.petplace.db.fb.FBUser
 import com.petplace.model.Age
 import com.petplace.model.Animal
 import com.petplace.model.Booking
@@ -17,13 +21,15 @@ import java.math.BigDecimal
 import kotlin.String
 
 
-class MainViewModel : ViewModel() {
+class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Listener {
     private val _hosting = getHostingPreview().toMutableStateList()
 
     val hosting
         get() = _hosting.toList()
 
-    val user = getUser()
+    private val _user = mutableStateOf<User?>(null)
+
+    val user : User? get() = _user.value
 
     val pets = getPetsList()
 
@@ -31,9 +37,29 @@ class MainViewModel : ViewModel() {
     val booking
         get() = _booking.toList()
 
+    init {
+        db.setListener(this)
+    }
+
+    override fun onUserLoaded(user: FBUser) {
+        _user.value = user.toUser()
+    }
+
+    override fun onUserSignOut() {
+        //TODO("Not yet implemented")
+    }
+
 }
 
-
+class MainViewModelFactory(private val db : FBDatabase) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(db) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 
 fun getHostingPreview() = List(3) { i ->
     PlacePreview(i, "Creche Patinhas", 245, 4,72.0, "Picture", false, 10.0, BigDecimal("145"), "Compartilhado", 1, 2)
@@ -62,7 +88,7 @@ fun getUser() = User(
     name = "Alana",
     email = "alana@gmail.com",
     phone = "(11)2480-2182",
-    address = "Rua Um, nº154, Pimentas, Guarulhos - SP",
+    address = null,
     password = "senha123"
 )
 

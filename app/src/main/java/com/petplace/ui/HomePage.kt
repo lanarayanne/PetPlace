@@ -117,11 +117,7 @@ fun HomePage(
                 })
         }
     }
-
-
 }
-
-
 
 @Composable
 fun PreviewItem(

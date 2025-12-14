@@ -8,6 +8,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,12 +44,23 @@ import com.petplace.model.User
 @Composable
 fun ProfilePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     val userData = viewModel.user
-    ProfileData(
-        user = userData,
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.White)
-    )
+    if (userData != null) {
+        ProfileData(
+            user = userData,
+            modifier = modifier
+                .fillMaxSize()
+                .background(Color.White)
+        )
+    } else {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+
+    }
+
 }
 
 @Composable
@@ -76,8 +89,8 @@ fun ProfileData(
         Spacer(modifier = Modifier.height(32.dp))
         ProfileInfoRow(label = "Nome", value = user.name)
         ProfileInfoRow(label = "E-mail", value = user.email)
-        ProfileInfoRow(label = "Telefone", value = user.phone)
-        ProfileInfoRow(label = "Endereço", value = user.address)
+        ProfileInfoRow(label = "Telefone", value = user.phone?: "")
+        ProfileInfoRow(label = "Endereço", value = user.address.toString())
 
         Spacer(modifier = Modifier.height(40.dp))
 

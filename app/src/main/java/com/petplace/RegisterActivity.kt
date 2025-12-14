@@ -42,6 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.petplace.db.fb.FBDatabase
+import com.petplace.db.fb.toFBUser
+import com.petplace.model.User
 import com.petplace.ui.theme.PetPlaceTheme
 
 class RegisterActivity : ComponentActivity() {
@@ -180,30 +183,23 @@ fun RegisterPage(modifier: Modifier = Modifier) {
             shape = CircleShape,
             border = BorderStroke(1.dp, Color.White),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent, // Fundo invisível
-                contentColor = Color.White          // Cor do texto "Entrar"
+                containerColor = Color.Transparent,
+                contentColor = Color.White
             ),
             onClick = {
-
                 Firebase.auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(activity) { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(activity,
                                 "Registro OK!", Toast.LENGTH_LONG).show()
-                            activity.finish()
+
+                            FBDatabase().register(User(name, email).toFBUser())
+
                         } else {
                             Toast.makeText(activity,
                                 "Registro FALHOU!", Toast.LENGTH_LONG).show()
                         }
                     }
-
-//                Toast.makeText(activity, "Cadastro realizado!", Toast.LENGTH_LONG).show()
-//                activity.startActivity(
-//                    Intent(activity, LoginActivity::class.java).setFlags(
-//                        FLAG_ACTIVITY_SINGLE_TOP
-//                    )
-//                )
-//                activity.finish()
             },
             enabled = name.isNotEmpty() && email.isNotEmpty() && repeatPassword.isNotEmpty() && password.isNotEmpty() && password == repeatPassword) {
             Text("Cadastrar")
