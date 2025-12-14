@@ -16,7 +16,6 @@ data class Pet (
     val color : com.petplace.model.Color? = null,
     val observations : String? =null,
     val picture : String? =null
-
 )
 
 enum class Age(val faixaEtaria: String) {
@@ -24,6 +23,4 @@ enum class Age(val faixaEtaria: String) {
     ADULTO("Adulto"),
     IDOSO("Idoso"),
     DESCONHECIDO("Desconhecido")
-
-
 }

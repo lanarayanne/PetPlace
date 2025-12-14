@@ -44,7 +44,8 @@ fun getHosting() = Hosting(
     type = HostingType.COMPARTILHADO,
     dailyRate = BigDecimal(145.00),
     vacancies = 15,
-    address = "Rua da creche, nº21, Iputinga, Recife- PE",
+    location = null,
+    complement = null,
     services = listOf(
         Service("Alimentação"),
         Service("Ar-Condicionado")
