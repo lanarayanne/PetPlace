@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -52,28 +53,36 @@ class MainActivity : ComponentActivity() {
                             ),
 
                             actions = {
-                                IconButton( onClick = { finish() } ) {
-                                    Icon(
-                                        imageVector =
-                                            Icons.AutoMirrored.Filled.ExitToApp,
-                                        contentDescription = "Localized description"
-                                    )
-                                }
+//                                IconButton( onClick = { finish() } ) {
+//                                    Icon(
+//                                        imageVector =
+//                                            Icons.AutoMirrored.Filled.ExitToApp,
+//                                        contentDescription = "Localized description"
+//                                    )
+//                                }
                                 IconButton( onClick = {  } ) {
                                     Icon(
                                         imageVector =
-                                            Icons.Default.Home,
-                                        contentDescription = "Mudar para hospedeiro"
+                                            Icons.Default.Menu,
+                                        contentDescription = "Menu"
                                     )
                                 }
+//                                IconButton( onClick = {  } ) {
+//                                    Icon(
+//                                        imageVector =
+//                                            Icons.Default.Home,
+//                                        contentDescription = "Mudar para hospedeiro"
+//                                    )
+//                                }
                             }
                         )
                     },
                     bottomBar = {
                         val items = listOf(
                             BottomNavItem.HomeButton,
-                            BottomNavItem.ProfileButton,
-                            BottomNavItem.PetsButton,
+                            BottomNavItem.MapButton,
+//                            BottomNavItem.ProfileButton,
+//                            BottomNavItem.PetsButton,
                             BottomNavItem.BookingButton
                         )
                         BottomNavBar(navController = navController, items)
@@ -90,22 +99,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PetPlaceTheme {
-        Greeting("Android")
     }
 }
 

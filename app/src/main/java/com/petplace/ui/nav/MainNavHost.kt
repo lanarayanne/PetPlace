@@ -9,6 +9,7 @@ import com.petplace.MainViewModel
 import com.petplace.ui.BookingsPage
 import com.petplace.ui.HomePage
 import com.petplace.ui.HostingPage
+import com.petplace.ui.MapPage
 import com.petplace.ui.PetsPage
 import com.petplace.ui.ProfilePage
 
@@ -16,6 +17,7 @@ import com.petplace.ui.ProfilePage
 fun MainNavHost(navController: NavHostController,viewModel: MainViewModel) {
     NavHost(navController, startDestination = Route.Home) {
         composable<Route.Home> { HomePage(viewModel = viewModel)  }
+        composable<Route.Map> { MapPage(viewModel = viewModel)  }
         composable<Route.Profile> { ProfilePage(viewModel = viewModel) }
         composable<Route.Pets>  { PetsPage(viewModel = viewModel) }
         composable<Route.Hosting>  { HostingPage(viewModel = viewModel) }
