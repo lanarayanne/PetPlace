@@ -7,7 +7,7 @@ data class Booking (
     val id : Int,
     val host : User,
     val client : User,
-    val pet : List<Pet>,
+    val pets : List<Pet>,
     val hosting : Hosting,
     val value : BigDecimal,
     val days : Int,

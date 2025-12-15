@@ -22,8 +22,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,41 +40,87 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.petplace.MainViewModel
 import com.petplace.model.Pet
+import com.petplace.ui.nav.Route
+import com.petplace.ui.ui.theme.PrimaryGreen
 
 @Composable
-fun PetsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+fun PetsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, navController: NavController) {
     val petsList = viewModel.pets
     val activity = LocalActivity.current as Activity
+    val user = viewModel.user
+    val pets: List<Pet> = viewModel.user?.pets ?: emptyList()
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.White),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
+    if(user != null && pets.isNotEmpty()){
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text(
+                    text = "Meus Pets",
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF419D78),
+                    textAlign = TextAlign.Start,
+                    fontSize = 30.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+            }
+            items(petsList, key = { it.id }) { pet ->
+                petItem(
+                    pet = pet,
+                    onClick = {
+                        Toast.makeText(activity, "${pet.name}", Toast.LENGTH_LONG).show()
+                    })
+            }
+        }
+    } else {
+        Column (
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
             Text(
-                text = "Meus Pets",
+                text = "Cadastre seu Pet",
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF419D78),
-                textAlign = TextAlign.Start,
+                textAlign = TextAlign.Center,
                 fontSize = 30.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
             )
-        }
-        items(petsList, key = { it.id }) { pet ->
-            petItem(
-                pet = pet,
+
+            Button (
                 onClick = {
-                    Toast.makeText(activity, "${pet.name}", Toast.LENGTH_LONG).show()
-                })
+                    navController.navigate(Route.RegisterPet)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryGreen,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(8.dp),
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Adicionar")
+            }
+
+
         }
+
+
     }
+
 }
 
 @Composable
@@ -126,9 +177,9 @@ fun petItem(
                 fontWeight = FontWeight.Medium,
                 color = Color.Black
             )
-            pet.race?.let { race ->
+            pet.breed?.let { race ->
                 Text(
-                    text = "${pet.race}",
+                    text = "${pet.breed}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black

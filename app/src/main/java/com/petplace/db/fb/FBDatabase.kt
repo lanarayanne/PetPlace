@@ -3,7 +3,9 @@ package com.petplace.db.fb
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+
 
 class FBDatabase {
     interface Listener {
@@ -42,6 +44,33 @@ class FBDatabase {
             throw RuntimeException("User not logged in!")
         val uid = auth.currentUser!!.uid
         db.collection("users").document(uid + "").set(user);
+    }
+
+    companion object {
+        fun updateProfile(
+            name: String,
+            phone: String,
+            address: String,
+            onSuccess: () -> Unit,
+            onFailure: (Exception) -> Unit
+        ) {
+            val uid = Firebase.auth.currentUser?.uid
+
+            if (uid != null) {
+                val updates = mapOf(
+                    "name" to name,
+                    "phone" to phone,
+                    "address" to address
+                )
+
+                Firebase.firestore // Use a instância estática direta
+                    .collection("users")
+                    .document(uid)
+                    .update(updates)
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { onFailure(it) }
+            }
+        }
     }
 
 }

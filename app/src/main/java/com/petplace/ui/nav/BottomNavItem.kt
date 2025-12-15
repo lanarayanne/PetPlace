@@ -11,23 +11,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
-    sealed interface Route {
-        @Serializable
-        data object Home : Route
-
-        @Serializable
-        data object Map : Route
-
-        @Serializable
-        data object Profile : Route
-        @Serializable
-        data object Pets : Route
-
-        @Serializable
-        data object Hosting : Route
-        @Serializable
-        data object Booking : Route
-    }
     sealed class BottomNavItem(
         val title: String,
         val icon: ImageVector,

@@ -12,7 +12,7 @@ data class Pet (
     val age : Age,
     val birthYear: Int? =null,
     val weight: Double,
-    val race : String? = null,
+    val breed : String? = null,
     val color : com.petplace.model.Color? = null,
     val observations : String? =null,
     val picture : String? =null

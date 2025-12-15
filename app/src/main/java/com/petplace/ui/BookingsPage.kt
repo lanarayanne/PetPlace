@@ -226,7 +226,7 @@ fun BookingCardItem(
                     fontSize = 16.sp
                 )
                 Text(
-                    text = "${booking.days} diária(s), ${booking.pet.size} pet(s)",
+                    text = "${booking.days} diária(s), ${booking.pets.size} pet(s)",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )

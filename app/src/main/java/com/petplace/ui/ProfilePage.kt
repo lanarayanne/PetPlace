@@ -37,19 +37,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.petplace.MainActivity
 import com.petplace.MainViewModel
 import com.petplace.model.User
+import com.petplace.ui.nav.Route
 
 @Composable
-fun ProfilePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+fun ProfilePage(navController: NavController, modifier: Modifier = Modifier, viewModel: MainViewModel) {
     val userData = viewModel.user
     if (userData != null) {
         ProfileData(
             user = userData,
             modifier = modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(Color.White),
+            navController = navController
         )
     } else {
         Box(
@@ -66,7 +69,8 @@ fun ProfilePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
 @Composable
 fun ProfileData(
     user: User,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController,
 ) {
     val activity = LocalActivity.current as Activity
     val scrollState = rememberScrollState()
@@ -74,7 +78,7 @@ fun ProfileData(
     Column(
         modifier=modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 24.dp, vertical = 40.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -90,7 +94,7 @@ fun ProfileData(
         ProfileInfoRow(label = "Nome", value = user.name)
         ProfileInfoRow(label = "E-mail", value = user.email)
         ProfileInfoRow(label = "Telefone", value = user.phone?: "")
-        ProfileInfoRow(label = "Endereço", value = user.address.toString())
+        ProfileInfoRow(label = "Endereço", value = user.address?.toString()?: "")
 
         Spacer(modifier = Modifier.height(40.dp))
 
@@ -100,7 +104,7 @@ fun ProfileData(
             verticalArrangement = Arrangement.spacedBy(12.dp))
         {
             ProfileActionButton(text = "Editar Perfil") {
-                Toast.makeText(activity, "Editar Perfil", Toast.LENGTH_SHORT).show()
+                navController.navigate(Route.EditProfile)
             }
             ProfileActionButton(text = "Alterar Senha") {
                 Toast.makeText(activity, "Alterar Senha", Toast.LENGTH_SHORT).show()

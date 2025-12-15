@@ -1,5 +1,6 @@
 package com.petplace
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,10 @@ import com.petplace.model.Status
 import com.petplace.model.User
 import java.math.BigDecimal
 import kotlin.String
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.setValue
+import com.petplace.model.SearchCriteria
 
 
 class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Listener {
@@ -26,6 +31,8 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
 
     val hosting
         get() = _hosting.toList()
+
+    private val allHostingsMock = getMockHostingsList() //TODO
 
     private val _user = mutableStateOf<User?> (null)
 
@@ -38,6 +45,19 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
     val booking
         get() = _booking.toList()
 
+    val hostingPreviews = mutableStateListOf<PlacePreview>()
+
+    var selectedHosting by mutableStateOf<Hosting?>(null)
+        private set
+
+    var currentSearch by mutableStateOf(SearchCriteria())
+        private set
+
+    // Função para atualizar a busca (usada na Home)
+    fun updateSearch(criteria: SearchCriteria) {
+        currentSearch = criteria
+    }
+
     init {
         db.setListener(this)
     }
@@ -48,6 +68,10 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
 
     override fun onUserSignOut() {
         //TODO("Not yet implemented")
+    }
+
+    fun selectHostingById(id: Int) {
+        selectedHosting = allHostingsMock.find { it.id == id }
     }
 
 }
@@ -62,11 +86,9 @@ class MainViewModelFactory(private val db : FBDatabase) :
     }
 }
 
-fun getHostingPreview() = List(3) { i ->
-    PlacePreview(i, "Creche Patinhas", 245, 4,72.0, "Picture", false, 10.0, BigDecimal("145"), "Compartilhado", 1, 2)
-}
 
 fun getHosting() = Hosting(
+    id = 1,
     name = "Creche Patinhas",
     type = HostingType.COMPARTILHADO,
     dailyRate = BigDecimal(145.00),
@@ -80,9 +102,6 @@ fun getHosting() = Hosting(
     description = "descrição",
 )
 
-fun getBookings() = List(3) { i ->
-    Booking(i, getUser(), getUser(), getPetsList(), getHosting(), BigDecimal(520.00), 5, "10/12/2025", "15/12/2025", status = Status.PROXIMA )
-}
 
 
 fun getUser() = User(
@@ -100,3 +119,56 @@ fun getPetsList() = listOf(
     Pet(3, "Rita", Animal("Gato"), Age.ADULTO, 2020, 4.7, "SRD", Color.MESCLADO),
     Pet(4, "Diego", Animal("Gato"), Age.ADULTO, null, 4.4, "SRD", Color.LARANJA)
 )
+
+fun getHostingPreview() = List(5) { i ->
+    PlacePreview(
+        id = i, // IDs serão 0, 1, 2, 3, 4
+        name = "Creche Patinhas $i",
+        distance = 245.0 + i,
+        rating = 4,
+        evaluation = 3,
+        picture = "Picture",
+        isFavorite = false,
+        size = 10.0 + i,
+        value = BigDecimal(145 + i),
+        type = "Compartilhado",
+        dailyCount = 1,
+        petCount = 2
+    )
+}
+
+fun getMockHostingsList() = List(5) { i ->
+    Hosting(
+        id = i, // O ID TEM QUE BATER com o Preview (0, 1, 2...)
+        name = "Creche Patinhas $i",
+        type = if (i % 2 == 0) HostingType.COMPARTILHADO else HostingType.INDIVIDUAL,
+        dailyRate = BigDecimal(145.00 + i),
+        vacancies = 15 - i,
+        location = null,
+        complement = "Próximo ao parque central",
+        services = listOf(
+            Service("Alimentação"),
+            Service("Ar-Condicionado"),
+            Service("Passeio Diário"),
+            Service("Banho")
+        ),
+        description = "Esta é a descrição detalhada da hospedagem número $i. " +
+                "Aqui seu pet terá todo o conforto e carinho que merece. " +
+                "Ambiente climatizado e monitorado 24 horas.",
+    )
+}
+
+fun getBookings() = List(3) { i ->
+    Booking(
+        id = i,
+        client = getUser(),
+        host = getUser(),
+        pets = getPetsList(),
+        hosting = getMockHostingsList()[0],
+        value = BigDecimal(520.00),
+        days = 5,
+        checkIn = "10/12/2025",
+        checkOut = "15/12/2025",
+        status = Status.PROXIMA
+    )
+}

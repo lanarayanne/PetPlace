@@ -6,8 +6,9 @@ data class User (
     val name : String,
     val email : String,
     val phone : String? =null,
-    val address : LatLng? =null,
+    //val address : LatLng? =null,
+    val address: String? = null,
     val password : String? = null,
-    val pet : List<Pet>? =null,
+    val pets : List<Pet>? =null,
     val hosting: List<Hosting>? =null
 )
