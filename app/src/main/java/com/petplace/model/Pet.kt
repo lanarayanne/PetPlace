@@ -8,7 +8,7 @@ import java.time.Year
 data class Pet (
     val id : Int,
     val name : String,
-    val animal : Animal,
+    val animal : Animal? = null, //TODO: Change
     val age : Age,
     val birthYear: Int? =null,
     val weight: Double,

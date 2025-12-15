@@ -64,6 +64,17 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
 
     override fun onUserLoaded(user: FBUser) {
         _user.value = user.toUser()
+
+        val userId = user.toUser().id
+        if (userId.isNotEmpty()) {
+            db.startPetsListener(userId) { petsDoBanco ->
+
+                val currentUser = _user.value
+                if (currentUser != null) {
+                    _user.value = currentUser.copy(pets = petsDoBanco)
+                }
+            }
+        }
     }
 
     override fun onUserSignOut() {
@@ -73,6 +84,57 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
     fun selectHostingById(id: Int) {
         selectedHosting = allHostingsMock.find { it.id == id }
     }
+
+    fun saveNewPet(
+        name: String,
+        animalType: String,
+        breed: String?,
+        age: Age,
+        weight: Double,
+        birthYear: Int?,
+        colorName: String?,
+        observations: String?,
+        onSuccess: () -> Unit
+    ) {
+        val currentUser = _user.value ?: return
+
+        val newPet = Pet(
+            id = (System.currentTimeMillis() % 100000).toInt(),
+            name = name,
+            animal = Animal(animalType), // TODO:
+            age = age,
+            weight = weight,
+            birthYear = birthYear,
+            breed = breed,
+            color = null, // TODO:
+            observations = observations,
+            picture = null
+        )
+
+        val updatedPets = currentUser.pets?.toMutableList()
+
+        updatedPets?.add(newPet)
+
+        _user.value = currentUser.copy(pets = updatedPets)
+
+        db.savePet(
+            userId = currentUser.id,
+            pet = newPet,
+            onSuccess = {
+
+                val updatedPets = currentUser.pets?.toMutableList()
+                updatedPets?.add(newPet)
+                _user.value = currentUser.copy(pets = updatedPets)
+
+                onSuccess()
+            },
+            onFailure = { e ->
+                e.printStackTrace()
+            }
+        )
+    }
+
+
 
 }
 
@@ -105,6 +167,7 @@ fun getHosting() = Hosting(
 
 
 fun getUser() = User(
+    id = "1548465",
     name = "Alana",
     email = "alana@gmail.com",
     phone = "(11)2480-2182",

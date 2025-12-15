@@ -190,10 +190,13 @@ fun RegisterPage(modifier: Modifier = Modifier) {
                 Firebase.auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(activity) { task ->
                         if (task.isSuccessful) {
+                            val firebaseUser = Firebase.auth.currentUser
+                            val newId = firebaseUser?.uid ?: ""
+
                             Toast.makeText(activity,
                                 "Registro OK!", Toast.LENGTH_LONG).show()
 
-                            FBDatabase().register(User(name, email).toFBUser())
+                            FBDatabase().register(User(newId, name, email).toFBUser())
 
                         } else {
                             Toast.makeText(activity,

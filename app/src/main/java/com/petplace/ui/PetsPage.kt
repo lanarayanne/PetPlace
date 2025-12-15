@@ -73,7 +73,7 @@ fun PetsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, navControl
                         .padding(bottom = 16.dp)
                 )
             }
-            items(petsList, key = { it.id }) { pet ->
+            items(pets, key = { it.id }) { pet ->
                 petItem(
                     pet = pet,
                     onClick = {
@@ -166,7 +166,7 @@ fun petItem(
                 color = Color.Black
             )
             Text(
-                text = "${pet.animal.animal}",
+                text = "${pet.animal?.animal}",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.Black

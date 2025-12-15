@@ -1,10 +1,14 @@
 package com.petplace.db.fb
 
+import com.google.firebase.firestore.DocumentId
 import com.petplace.model.Hosting
 import com.petplace.model.Pet
 import com.petplace.model.User
 
 class FBUser {
+    @DocumentId
+    var id: String? = null
+
     var name : String ? = null
     var email : String? = null
 
@@ -14,7 +18,7 @@ class FBUser {
     var pet : List<Pet>? =null
     var hosting: List<Hosting>? =null
 
-    fun toUser() = User(name!!, email!!, phone, address)
+    fun toUser() = User(id = id ?: "",name!!, email!!, phone, address)
 }
 
 fun User.toFBUser() : FBUser {

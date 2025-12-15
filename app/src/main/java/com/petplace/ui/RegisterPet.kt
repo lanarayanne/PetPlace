@@ -170,30 +170,38 @@ fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
 
         Button(
             onClick = {
-                if (name.isNotEmpty() && animalType.isNotEmpty() && weight.isNotEmpty()) {
-                    val weightDouble = weight.toDoubleOrNull() ?: 0.0
-                    val yearInt = birthYear.toIntOrNull()
 
-                    if (currentUser != null) {
-                        // TODO:
-                        /*
+                    if (name.isNotEmpty() && animalType.isNotEmpty() && weight.isNotEmpty()) {
+
+                        val weightDouble = weight.toDoubleOrNull() ?: 0.0
+                        val yearInt = birthYear.toIntOrNull()
+
                         viewModel.saveNewPet(
                             name = name,
-                            animalType = animalType, // String que vira objeto Animal
-                            age = age, // Enum
+                            animalType = animalType,
+                            breed = if (breed.isBlank()) null else breed,
+                            age = age, // Enum que já está no estado da tela
                             weight = weightDouble,
                             birthYear = yearInt,
-                            breed = if(breed.isBlank()) null else breed,
-                            color = if(colorName.isBlank()) null else colorName,
-                            observations = if(observations.isBlank()) null else observations
+                            colorName = if (colorName.isBlank()) null else colorName,
+                            observations = if (observations.isBlank()) null else observations,
+                            onSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Pet salvo com sucesso!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.popBackStack()
+                            }
                         )
-                        */
-                        Toast.makeText(context, "Pet $name salvo!", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Preencha os campos obrigatórios (*)",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                } else {
-                    Toast.makeText(context, "Preencha Nome, Animal e Peso", Toast.LENGTH_SHORT).show()
-                }
+
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF419D78))

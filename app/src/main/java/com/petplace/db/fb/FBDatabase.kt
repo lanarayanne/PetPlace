@@ -5,6 +5,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.petplace.model.Pet
 
 
 class FBDatabase {
@@ -73,4 +74,35 @@ class FBDatabase {
         }
     }
 
+    fun savePet(userId: String, pet: Pet, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val firebasePet = pet.toFBPet()
+
+        db.collection("users")
+            .document(userId)
+            .collection("pets")
+            .document(pet.id.toString())
+            .set(firebasePet)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e -> onFailure(e) }
+    }
+
+    fun startPetsListener(userId: String, onPetsUpdate: (List<Pet>) -> Unit) {
+        db.collection("users")
+            .document(userId)
+            .collection("pets")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val pets = snapshot.toObjects(FBPet::class.java).map { it.toPet() }
+                    onPetsUpdate(pets)
+                }
+            }
+    }
+
 }
+
