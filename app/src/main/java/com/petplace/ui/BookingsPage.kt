@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarToday // Ícone para vazio
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +34,13 @@ import com.petplace.model.Status
 fun BookingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     val bookingList = viewModel.booking
     val activity = LocalActivity.current as Activity
+    var selectedStatus by remember { mutableStateOf<Status?>(null) }
+
+    val filteredList = if (selectedStatus == null) {
+        bookingList
+    } else {
+        bookingList.filter { it.status == selectedStatus }
+    }
 
     Column(
         modifier = modifier
@@ -46,10 +58,68 @@ fun BookingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
                 .padding(16.dp)
         )
 
+        BookingsContent(
+            bookingList = filteredList,
+            selectedStatus = selectedStatus,
+            onFilterSelected = { status ->
+                selectedStatus = if (selectedStatus == status) null else status
+            },
+            activity = activity
+        )
+
+    }
+}
+
+
+
+@Composable
+fun BookingsContent(
+    bookingList: List<Booking>,
+    selectedStatus: Status?,
+    onFilterSelected: (Status) -> Unit,
+    activity: Activity) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item {
+            // Filtros (Status)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+            ) {
+                StatusBadge(Status.PROXIMA, selectedStatus == Status.PROXIMA) { onFilterSelected(Status.PROXIMA) }
+                Spacer(modifier = Modifier.weight(1f))
+                StatusBadge(Status.EMANDAMENTO, selectedStatus == Status.EMANDAMENTO) { onFilterSelected(Status.EMANDAMENTO) }
+                Spacer(modifier = Modifier.weight(1f))
+                StatusBadge(Status.CONCLUIDA, selectedStatus == Status.CONCLUIDA) { onFilterSelected(Status.CONCLUIDA) }
+                Spacer(modifier = Modifier.weight(1f))
+                StatusBadge(Status.CANCELADA, selectedStatus == Status.CANCELADA) { onFilterSelected(Status.CANCELADA) }
+            }
+        }
+
         if (bookingList.isEmpty()) {
-            EmptyStateMessage()
+            item {
+                Box(modifier = Modifier.fillParentMaxSize()) {
+                    EmptyStateMessage()
+                }
+            }
         } else {
-            BookingsContent(bookingList, activity)
+            items(bookingList, key = { it.id }) { item ->
+                BookingCardItem(
+                    booking = item,
+                    onClick = {
+                        Toast.makeText(activity, "${item.hosting.name}", Toast.LENGTH_LONG).show()
+                    })
+            }
+        }
+
+        items(bookingList, key = { it.id }) { item ->
+            BookingCardItem(
+                booking = item,
+                onClick = {
+                    Toast.makeText(activity, "${item.hosting.name}", Toast.LENGTH_LONG).show()
+                })
         }
     }
 }
@@ -83,43 +153,23 @@ fun EmptyStateMessage() {
 }
 
 @Composable
-fun BookingsContent(bookingList: List<Booking>, activity: Activity) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            // Filtros (Status)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
-                StatusBadge(Status.PROXIMA)
-                Spacer(modifier = Modifier.weight(1f))
-                StatusBadge(Status.EMANDAMENTO)
-                Spacer(modifier = Modifier.weight(1f))
-                StatusBadge(Status.CONCLUIDA)
-                Spacer(modifier = Modifier.weight(1f))
-                StatusBadge(Status.CANCELADA)
-            }
-        }
+fun StatusBadge(
+    status: Status,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val color = getStatusColor(status)
+    val backgroundColor = if (isSelected) color else Color.Transparent
+    val contentColor = if (isSelected) Color.White else Color.Black
+    val borderColor = if (isSelected) Color.Transparent else color
 
-        items(bookingList, key = { it.id }) { item ->
-            BookingCardItem(
-                booking = item,
-                onClick = {
-                    Toast.makeText(activity, "${item.hosting.name}", Toast.LENGTH_LONG).show()
-                })
-        }
-    }
-}
-
-@Composable
-fun StatusBadge(status: Status) {
     Surface(
-        color = Color.Transparent,
-        border = BorderStroke(width = 2.dp, color = getStatusColor(status)),
-        shape = RoundedCornerShape(50)
+        color = backgroundColor,
+        border = BorderStroke(width = 2.dp, color = borderColor),
+        shape = RoundedCornerShape(50),
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .clickable { onClick() }
     ) {
         Text(
             text = status.status,

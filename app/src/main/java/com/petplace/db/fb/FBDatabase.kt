@@ -66,7 +66,7 @@ class FBDatabase {
                     "address" to address
                 )
 
-                Firebase.firestore // Use a instância estática direta
+                Firebase.firestore
                     .collection("users")
                     .document(uid)
                     .update(updates)
