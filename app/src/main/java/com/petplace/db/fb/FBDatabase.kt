@@ -158,4 +158,39 @@ class FBDatabase {
                 }
             }
     }
+
+    fun toggleFavorite(
+        userId: String,
+        hostingId: String,
+        isFavorite: Boolean
+    ) {
+        val ref = db
+            .collection("users")
+            .document(userId)
+            .collection("favorites")
+            .document(hostingId)
+
+        if (isFavorite) {
+            ref.set(mapOf("createdAt" to System.currentTimeMillis()))
+        } else {
+            ref.delete()
+        }
+    }
+
+    fun startFavoritesListener(
+        userId: String,
+        onResult: (List<String>) -> Unit
+    ) {
+        db
+            .collection("users")
+            .document(userId)
+            .collection("favorites")
+            .addSnapshotListener { snapshot, _ ->
+
+                val ids = snapshot?.documents?.map { it.id } ?: emptyList()
+                onResult(ids)
+            }
+    }
+
+
 }

@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.petplace.MainViewModel
 import com.petplace.ui.BookingsPage
 import com.petplace.ui.EditProfilePage
+import com.petplace.ui.FavoritePage
 import com.petplace.ui.HomePage
 import com.petplace.ui.HostingDescriptionPage
 import com.petplace.ui.HostingPage
@@ -21,7 +22,9 @@ import com.petplace.ui.RegisterPet
 fun MainNavHost(navController: NavHostController,viewModel: MainViewModel) {
     NavHost(navController, startDestination = Route.Home) {
         composable<Route.Home> { HomePage(viewModel = viewModel, navController = navController) }
-        composable<Route.Map> { MapPage(viewModel = viewModel) }
+        composable<Route.Map> { MapPage(viewModel = viewModel, navController = navController) }
+        composable<Route.Favorite> { FavoritePage(viewModel = viewModel, navController = navController) }
+
         composable<Route.Profile> {
             ProfilePage(
                 viewModel = viewModel,

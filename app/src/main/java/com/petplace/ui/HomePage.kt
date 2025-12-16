@@ -26,9 +26,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -65,6 +67,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -92,58 +95,88 @@ fun HomePage(
     viewModel: MainViewModel,
     navController: NavController
 ) {
-    val hostingList = viewModel.hosting
+    val hostingList = viewModel.searchResults
     val activity = LocalActivity.current as Activity
+    val hasSearched = viewModel.hasSearched
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        item {
-            SearchComposable(modifier = Modifier.fillMaxWidth(), viewModel)
-        }
-        item {
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)){
-                Text(
-                    text = "${hostingList.size} Resultados",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.SwapVert,
-                    contentDescription = "Ordenar",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "${hostingList.size} Ordenar",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-                Icon(
-                    imageVector = Icons.Default.FilterList,
-                    contentDescription = "Filtrar",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "${hostingList.size} Filtrar",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
+        SearchComposable(
+            modifier = Modifier.fillMaxWidth(),
+            viewModel = viewModel
+        )
+
+        if (hasSearched) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f) // Ocupa todo o espaço restante
+            ) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text = "${hostingList.size} Resultados",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(Icons.Default.SwapVert, null, tint = Color.Gray)
+                        Text("Ordenar", fontSize = 12.sp, color = Color.Gray)
+                        Icon(Icons.Default.FilterList, null, tint = Color.Gray)
+                        Text("Filtrar", fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+
+                items(hostingList, key = { it.id }) { item ->
+                    PreviewItem(
+                        preview = item,
+                        onClick = {
+                            navController.navigate(Route.HostingDescription(item.id))
+                        },
+                        onFavoriteClick = {
+                            viewModel.toggleFavorite(item.id)
+                        }
+                    )
+                }
             }
-        }
-        items(hostingList, key = { it.id }) { item ->
-            PreviewItem(
-                preview = item,
-                onClick = {
-                    Toast.makeText(activity, "${item.name}", Toast.LENGTH_LONG).show()
-                    navController.navigate(Route.HostingDescription(item.id))
-                })
+        } else {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = Color.LightGray,
+                        modifier = Modifier.size(80.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Faça uma pesquisa para\nver as hospedagens",
+                        color = Color.Gray,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
@@ -152,6 +185,7 @@ fun HomePage(
 fun PreviewItem(
     preview: PlacePreview,
     onClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -206,11 +240,20 @@ fun PreviewItem(
                             color = Color.Black
                         )
                         Icon(
-                            imageVector = Icons.Outlined.FavoriteBorder,
+                            imageVector =
+                                if (preview.isFavorite)
+                                    Icons.Filled.Favorite
+                                else
+                                    Icons.Outlined.FavoriteBorder,
                             contentDescription = "Favoritar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(24.dp)
+                            tint = if (preview.isFavorite) Color.Red else Color.Gray,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    onFavoriteClick()
+                                }
                         )
+
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -295,6 +338,16 @@ fun SearchComposable(
     val search = viewModel.currentSearch
     var showPicker by remember { mutableStateOf(false) }
 
+    val displayDate = remember(search.startDate, search.endDate) {
+        if (search.startDate != null && search.endDate != null) {
+            val format = SimpleDateFormat("dd/MM", Locale("pt", "BR"))
+            "${format.format(search.startDate)} - ${format.format(search.endDate)}"
+        } else {
+            ""
+        }
+    }
+
+
     val mockUserLocation = "Av. Paulista, 1578 - SP" //TODO
     val mockSavedPetsCount = 3 //TODO
 
@@ -308,14 +361,6 @@ fun SearchComposable(
         )
     }
 
-    val displayDate = remember(search.startDate, search.endDate) {
-        if (search.startDate != null && search.endDate != null) {
-            val format = SimpleDateFormat("dd/MM", Locale("pt", "BR"))
-            "${format.format(search.startDate)} - ${format.format(search.endDate)}"
-        } else {
-            ""
-        }
-    }
 
     Column(
         modifier = modifier
@@ -400,6 +445,9 @@ fun SearchComposable(
                 contentColor = Color.White
             ),
             onClick = {
+                viewModel.performSearch()
+                viewModel.onSearchClicked()
+
                 Toast.makeText(
                     activity,
                     "Buscando...",

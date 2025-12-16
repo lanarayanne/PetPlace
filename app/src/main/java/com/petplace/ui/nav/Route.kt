@@ -28,4 +28,7 @@ sealed interface Route {
 
     @Serializable
     data object RegisterPet : Route
+
+    @Serializable
+    data object Favorite : Route
 }

@@ -18,6 +18,7 @@ class FBHosting {
     var vacancies: Int? = null
     var lat: Double? = null
     var lgn: Double? = null
+    var address: String? = null
     var location: String? = null
     var complement: String? = null
     var services: List<Service>? = null
@@ -28,7 +29,6 @@ class FBHosting {
     var owner: User? = null
 
     fun toHosting(): Hosting {
-        // Recria o objeto LatLng a partir dos doubles
         val locationObj = if (lat != null && lgn != null) {
             LatLng(lat!!, lgn!!)
         } else {

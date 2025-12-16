@@ -1,5 +1,6 @@
 package com.petplace.model
 
+import android.location.Address
 import com.google.android.gms.maps.model.LatLng
 import java.math.BigDecimal
 
@@ -9,6 +10,7 @@ data class Hosting (
     val type : HostingType = HostingType.COMPARTILHADO,
     val dailyRate : BigDecimal = BigDecimal.ZERO,
     val vacancies : Int = 0,
+    val address: String? = null,
     val location : LatLng? = null,
     val complement : String? = null,
     val services : List<Service> = emptyList(),

@@ -48,7 +48,6 @@ import com.petplace.ui.ui.theme.PrimaryGreen
 
 @Composable
 fun PetsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, navController: NavController) {
-    val petsList = viewModel.pets
     val activity = LocalActivity.current as Activity
     val user = viewModel.user
     val pets: List<Pet> = viewModel.user?.pets ?: emptyList()
