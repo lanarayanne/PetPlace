@@ -3,7 +3,7 @@ package com.petplace.model
 import java.math.BigDecimal
 
 data class PlacePreview (
-    var id : Int,
+    var id : String,
     val name : String,
     val evaluation : Int,
     val rating : Int,

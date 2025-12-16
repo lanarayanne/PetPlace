@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack // Import necessário
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.*
@@ -28,6 +29,8 @@ import com.petplace.model.Age
 @Composable
 fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
     val context = LocalContext.current
+    // Removida a variável currentUser se não estiver sendo usada na UI,
+    // mas mantida caso você use depois.
     val currentUser = viewModel.user
 
     var name by remember { mutableStateOf("") }
@@ -50,15 +53,31 @@ fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Cadastrar Pet",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF419D78)
-        )
+
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Voltar",
+                    tint = Color(0xFF419D78)
+                )
+            }
+
+            Text(
+                text = "Cadastrar Pet",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF419D78),
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
-
 
         PetInfoInput(
             value = name,
@@ -106,7 +125,9 @@ fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
                 shape = CircleShape
             )
 
-            Box(modifier = Modifier.matchParentSize().clickable { ageDropdownExpanded = true })
+            Box(modifier = Modifier
+                .matchParentSize()
+                .clickable { ageDropdownExpanded = true })
 
             DropdownMenu(
                 expanded = ageDropdownExpanded,
@@ -126,10 +147,9 @@ fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
                             ageDropdownExpanded = false
                         },
                         colors = MenuDefaults.itemColors(
-                            textColor = Color.Black, )
+                            textColor = Color.Black,
                         )
-
-
+                    )
                 }
             }
         }
@@ -146,7 +166,9 @@ fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
 
         PetInfoInput(
             value = birthYear,
-            onValueChange = { if (it.length <= 4 && it.all { char -> char.isDigit() }) birthYear = it },
+            onValueChange = {
+                if (it.length <= 4 && it.all { char -> char.isDigit() }) birthYear = it
+            },
             placeholder = "Ex: 2020",
             label = "Ano de Nascimento",
             keyboardType = KeyboardType.Number
@@ -170,38 +192,35 @@ fun RegisterPet(navController: NavController, viewModel: MainViewModel) {
 
         Button(
             onClick = {
+                if (name.isNotEmpty() && animalType.isNotEmpty() && weight.isNotEmpty()) {
+                    val weightDouble = weight.toDoubleOrNull() ?: 0.0
+                    val yearInt = birthYear.toIntOrNull()
 
-                    if (name.isNotEmpty() && animalType.isNotEmpty() && weight.isNotEmpty()) {
-
-                        val weightDouble = weight.toDoubleOrNull() ?: 0.0
-                        val yearInt = birthYear.toIntOrNull()
-
-                        viewModel.saveNewPet(
-                            name = name,
-                            animalType = animalType,
-                            breed = if (breed.isBlank()) null else breed,
-                            age = age, // Enum que já está no estado da tela
-                            weight = weightDouble,
-                            birthYear = yearInt,
-                            colorName = if (colorName.isBlank()) null else colorName,
-                            observations = if (observations.isBlank()) null else observations,
-                            onSuccess = {
-                                Toast.makeText(
-                                    context,
-                                    "Pet salvo com sucesso!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                navController.popBackStack()
-                            }
-                        )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Preencha os campos obrigatórios (*)",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
+                    viewModel.saveNewPet(
+                        name = name,
+                        animalType = animalType,
+                        breed = if (breed.isBlank()) null else breed,
+                        age = age,
+                        weight = weightDouble,
+                        birthYear = yearInt,
+                        colorName = if (colorName.isBlank()) null else colorName,
+                        observations = if (observations.isBlank()) null else observations,
+                        onSuccess = {
+                            Toast.makeText(
+                                context,
+                                "Pet salvo com sucesso!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController.popBackStack()
+                        }
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Preencha os campos obrigatórios (*)",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF419D78))

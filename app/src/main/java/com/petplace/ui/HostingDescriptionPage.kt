@@ -1,5 +1,6 @@
 package com.petplace.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,11 +19,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.petplace.MainViewModel
 import com.petplace.model.SearchCriteria
+import androidx.compose.runtime.setValue
 
 
 @Composable
@@ -42,6 +49,7 @@ fun HostingDescriptionPage(
 ) {
     val item = viewModel.selectedHosting
     val searchCriteria = viewModel.currentSearch
+    var showModal by remember { mutableStateOf(false) }
 
     if (item != null) {
         Column(
@@ -50,8 +58,6 @@ fun HostingDescriptionPage(
                 .background(Color.White)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState()))
-
-
         {
 //            Button(onClick = { navController.popBackStack() }) {
 //                Text("Voltar")
@@ -251,11 +257,78 @@ fun HostingDescriptionPage(
             /*TODO: Avaliações*/
 
             Button(
-                onClick = { },
+                onClick = {
+                    showModal = true
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF419D78))
             ) {
                 Text("Reservar", color = Color.White)
+            }
+
+            if (showModal) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showModal = false
+                    },
+                    containerColor = Color.White,
+                    title = {
+                        Text(
+                            text = "Confirmar Reserva",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF419D78)
+                        )
+                    },
+                    text = {
+                        Column (
+                        ) {
+                            Text(
+                                text = "Você deseja confirmar a reserva em ${item.name}?",
+                                color = Color.Black)
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Entrada: ${searchCriteria.startDate}",
+                                color = Color.Black)
+                            Text(
+                                text = "Saída: ${searchCriteria.endDate}",
+                                color = Color.Black)
+                            Text(
+                                text = "Valor Total: ${formatCurrency(searchCriteria.value)}",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 8.dp),
+                                color = Color.Black
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.saveBooking(
+                                    onSuccess = {
+                                        showModal = false
+                                        Toast.makeText(navController.context, "Reserva realizada!", Toast.LENGTH_SHORT).show()
+                                        navController.popBackStack()
+                                    },
+                                    onError = { erro ->
+                                        Toast.makeText(navController.context, erro, Toast.LENGTH_LONG).show()
+                                    }
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF419D78))
+                        ) {
+                            Text("Confirmar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showModal = false }
+                        ) {
+                            Text("Cancelar", color = Color.Gray)
+                        }
+                    }
+                )
             }
         }
     } else {

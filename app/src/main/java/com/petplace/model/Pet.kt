@@ -6,12 +6,12 @@ import java.time.Year
 
 
 data class Pet (
-    val id : Int,
-    val name : String,
+    val id : Int = 0,
+    val name : String = "",
     val animal : Animal? = null, //TODO: Change
-    val age : Age,
+    val age : Age = Age.DESCONHECIDO,
     val birthYear: Int? =null,
-    val weight: Double,
+    val weight: Double = 0.0,
     val breed : String? = null,
     val color : com.petplace.model.Color? = null,
     val observations : String? =null,

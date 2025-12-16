@@ -62,16 +62,33 @@ fun PetsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, navControl
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text(
-                    text = "Meus Pets",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF419D78),
-                    textAlign = TextAlign.Start,
-                    fontSize = 30.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                )
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Meus Pets",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF419D78),
+                        textAlign = TextAlign.Start,
+                        fontSize = 30.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(bottom = 16.dp )
+                    )
+                    Button (
+                        onClick = {
+                            navController.navigate(Route.RegisterPet)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryGreen,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Adicionar")
+                    }
+                }
             }
             items(pets, key = { it.id }) { pet ->
                 petItem(

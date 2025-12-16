@@ -23,6 +23,7 @@ import kotlin.String
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
+import com.google.firebase.Firebase
 import com.petplace.model.SearchCriteria
 
 
@@ -41,9 +42,9 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
 
     val pets = getPetsList()
 
-    private val _booking = getBookings().toMutableStateList()
-    val booking
-        get() = _booking.toList()
+    private val _bookings = mutableStateListOf<Booking>()
+    val booking: List<Booking>
+        get() = _bookings
 
     val hostingPreviews = mutableStateListOf<PlacePreview>()
 
@@ -63,17 +64,31 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
     }
 
     override fun onUserLoaded(user: FBUser) {
-        _user.value = user.toUser()
+        android.util.Log.d("DEBUG_FB", "MainViewModel: onUserLoaded chamado! Usuário: ${user.id}")
 
+        _user.value = user.toUser()
         val userId = user.toUser().id
+
         if (userId.isNotEmpty()) {
             db.startPetsListener(userId) { petsDoBanco ->
-
                 val currentUser = _user.value
                 if (currentUser != null) {
                     _user.value = currentUser.copy(pets = petsDoBanco)
                 }
             }
+
+            android.util.Log.d("DEBUG_FB", "MainViewModel: Iniciando listener de reservas...")
+
+            db.startBookingsListener(userId) { reservasDoBanco ->
+
+                // LOG 3: Verificar se chegaram dados
+                android.util.Log.d("DEBUG_FB", "MainViewModel: Recebi ${reservasDoBanco.size} reservas.")
+
+                _bookings.clear()
+                _bookings.addAll(reservasDoBanco)
+            }
+        } else {
+            android.util.Log.e("DEBUG_FB", "MainViewModel: ID do usuário veio vazio!")
         }
     }
 
@@ -81,7 +96,7 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
         //TODO("Not yet implemented")
     }
 
-    fun selectHostingById(id: Int) {
+    fun selectHostingById(id: String) {
         selectedHosting = allHostingsMock.find { it.id == id }
     }
 
@@ -134,6 +149,38 @@ class MainViewModel (private val db: FBDatabase) : ViewModel(), FBDatabase.Liste
         )
     }
 
+    fun saveBooking(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val hosting = selectedHosting
+        val search = currentSearch
+        val currentUser = user
+
+        if (hosting == null || currentUser == null) {
+            onError("Erro: Falta usuário ou hospedagem.")
+            return
+        }
+
+        val bookingId = java.util.UUID.randomUUID().toString()
+
+        val newBooking = com.petplace.model.Booking(
+            id = bookingId,
+            host = com.petplace.model.User("12345", name = "Anfitrião Teste", "a@gmail.com"), // TODO:
+            client = currentUser,
+            pets = emptyList(),
+            hosting = hosting,
+            value = search.value, // Double
+            days = 1,
+            checkIn = search.startDate.toString(),
+            checkOut = search.endDate.toString(),
+            status = com.petplace.model.Status.PROXIMA
+        )
+
+        db.saveBooking(
+            booking = newBooking,
+            onSuccess = { onSuccess() },
+            onFailure = { e -> onError(e.message ?: "Erro ao salvar") }
+        )
+    }
+
 
 
 }
@@ -150,7 +197,7 @@ class MainViewModelFactory(private val db : FBDatabase) :
 
 
 fun getHosting() = Hosting(
-    id = 1,
+    id = "1",
     name = "Creche Patinhas",
     type = HostingType.COMPARTILHADO,
     dailyRate = BigDecimal(145.00),
@@ -185,7 +232,7 @@ fun getPetsList() = listOf(
 
 fun getHostingPreview() = List(5) { i ->
     PlacePreview(
-        id = i, // IDs serão 0, 1, 2, 3, 4
+        id = i.toString(),
         name = "Creche Patinhas $i",
         distance = 245.0 + i,
         rating = 4,
@@ -202,7 +249,7 @@ fun getHostingPreview() = List(5) { i ->
 
 fun getMockHostingsList() = List(5) { i ->
     Hosting(
-        id = i, // O ID TEM QUE BATER com o Preview (0, 1, 2...)
+        id = i.toString(),
         name = "Creche Patinhas $i",
         type = if (i % 2 == 0) HostingType.COMPARTILHADO else HostingType.INDIVIDUAL,
         dailyRate = BigDecimal(145.00 + i),
@@ -223,7 +270,7 @@ fun getMockHostingsList() = List(5) { i ->
 
 fun getBookings() = List(3) { i ->
     Booking(
-        id = i,
+        id = i.toString(),
         client = getUser(),
         host = getUser(),
         pets = getPetsList(),

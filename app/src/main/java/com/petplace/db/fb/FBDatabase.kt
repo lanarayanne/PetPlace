@@ -1,10 +1,12 @@
 package com.petplace.db.fb
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.petplace.model.Booking
 import com.petplace.model.Pet
 
 
@@ -104,5 +106,56 @@ class FBDatabase {
             }
     }
 
-}
+    fun saveBooking(booking: Booking, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        Log.d("DEBUG_FB", "FBDatabase: Tentando salvar reserva ${booking.id}")
 
+        try {
+            val firebaseBooking = booking.toFBBooking()
+
+            db.collection("bookings")
+                .document(firebaseBooking.id ?: "")
+                .set(firebaseBooking)
+                .addOnSuccessListener {
+                    Log.d("DEBUG_FB", "FBDatabase: Reserva salva com SUCESSO!")
+                    onSuccess()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("DEBUG_FB", "FBDatabase: Falha ao salvar no Firestore", e)
+                    onFailure(e)
+                }
+        } catch (e: Exception) {
+            Log.e("DEBUG_FB", "FBDatabase: Erro de conversão antes de salvar", e)
+            onFailure(e)
+        }
+    }
+
+    fun startBookingsListener(userId: String, onUpdate: (List<com.petplace.model.Booking>) -> Unit) {
+        Log.d("DEBUG_FB", "FBDatabase: Iniciando listener de reservas para client.id = $userId")
+
+        db.collection("bookings")
+            .whereEqualTo("client.id", userId)
+            .addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    Log.e("DEBUG_FB", "FBDatabase: Erro no Listener", error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshots != null) {
+                    Log.d("DEBUG_FB", "FBDatabase: Listener recebeu ${snapshots.size()} documentos.")
+
+                    val bookingsList = snapshots.documents.mapNotNull { doc ->
+                        try {
+                            val fbBooking = doc.toObject(FBBooking::class.java)
+                            fbBooking?.toBooking()
+                        } catch (e: Exception) {
+                            Log.e("DEBUG_FB", "FBDatabase: Erro ao converter documento ${doc.id}", e)
+                            null
+                        }
+                    }
+                    onUpdate(bookingsList)
+                } else {
+                    Log.d("DEBUG_FB", "FBDatabase: Snapshot veio nulo.")
+                }
+            }
+    }
+}

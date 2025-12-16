@@ -83,6 +83,7 @@ class MainActivity : ComponentActivity() {
 
                 ModalNavigationDrawer(
                     drawerState = drawerState,
+                    gesturesEnabled = drawerState.isOpen,
                     drawerContent = {
                         ModalDrawerSheet (
                             modifier = Modifier.width(260.dp),

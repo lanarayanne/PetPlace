@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 data class Booking (
-    val id : Int,
+    val id : String,
     val host : User,
     val client : User,
     val pets : List<Pet>,

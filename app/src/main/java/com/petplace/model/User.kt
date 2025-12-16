@@ -3,10 +3,10 @@ package com.petplace.model
 import com.google.android.gms.maps.model.LatLng
 
 data class User (
-    val id: String,
-    val name : String,
-    val email : String,
-    val phone : String? =null,
+    val id: String = "",
+    val name : String = "",
+    val email : String = "",
+    val phone : String? = null,
     //val address : LatLng? =null,
     val address: String? = null,
     val password : String? = null,
